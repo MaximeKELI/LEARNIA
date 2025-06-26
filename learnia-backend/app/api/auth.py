@@ -31,6 +31,8 @@ async def register(
     - **grade_level**: Niveau scolaire (optionnel)
     - **school**: École (optionnel)
     - **is_teacher**: Si c'est un enseignant (optionnel)
+    - **birth_date**: Date de naissance (optionnel, format YYYY-MM-DD)
+    - **phone**: Numéro de téléphone (optionnel)
     """
     try:
         user = create_user(db, user_create)
@@ -48,6 +50,8 @@ async def register(
             created_at=user.created_at,
             updated_at=user.updated_at,
             last_login=user.last_login,
+            birth_date=user.birth_date,
+            phone=user.phone,
         )
 
     except HTTPException:
@@ -124,6 +128,8 @@ async def get_current_user_info(
         created_at=current_user.created_at,
         updated_at=current_user.updated_at,
         last_login=current_user.last_login,
+        birth_date=current_user.birth_date,
+        phone=current_user.phone,
     )
 
 

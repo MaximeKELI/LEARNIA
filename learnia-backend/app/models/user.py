@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional
 
 from pydantic import EmailStr
@@ -15,6 +15,8 @@ class UserBase(SQLModel):
     school: Optional[str] = None
     is_active: bool = True
     is_teacher: bool = False
+    birth_date: Optional[date] = None
+    phone: Optional[str] = None
 
 
 class User(UserBase, table=True):
@@ -44,6 +46,8 @@ class UserUpdate(SQLModel):
     grade_level: Optional[str] = None
     school: Optional[str] = None
     password: Optional[str] = None
+    birth_date: Optional[date] = None
+    phone: Optional[str] = None
 
 
 class UserResponse(UserBase):

@@ -1,5 +1,6 @@
 import 'modules/qcm/qcm_page.dart';
 import 'modules/ocr/ocr_page.dart';
+import 'modules/auth/auth_page.dart';
 import 'package:flutter/material.dart';
 import 'modules/tutor/tutor_page.dart';
 import 'modules/leitner/leitner_page.dart';
@@ -25,7 +26,11 @@ class LearniaApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const HomePage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const AuthPage(),
+        '/home': (context) => const HomePage(),
+      },
       debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,

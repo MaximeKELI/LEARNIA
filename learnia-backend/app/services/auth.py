@@ -111,6 +111,8 @@ def create_user(db: Session, user_create: UserCreate) -> User:
         school=user_create.school,
         is_teacher=user_create.is_teacher,
         hashed_password=hashed_password,
+        birth_date=getattr(user_create, 'birth_date', None),
+        phone=getattr(user_create, 'phone', None),
     )
 
     db.add(db_user)
