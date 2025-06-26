@@ -1,7 +1,38 @@
 import 'package:flutter/material.dart';
 
-class LeitnerPage extends StatelessWidget {
+class LeitnerPage extends StatefulWidget {
   const LeitnerPage({super.key});
+
+  @override
+  State<LeitnerPage> createState() => _LeitnerPageState();
+}
+
+class _LeitnerPageState extends State<LeitnerPage> {
+  final TextEditingController _questionController = TextEditingController();
+  String? _leitnerResult;
+  bool _isLoading = false;
+
+  Future<void> _askLeitner() async {
+    if (_questionController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Veuillez entrer une question ou un prompt'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+      _leitnerResult = null;
+    });
+    // TODO: Appeler l'IA pour générer une réponse Leitner
+    await Future.delayed(const Duration(seconds: 2)); // Simulation
+    setState(() {
+      _leitnerResult = 'Réponse IA (exemple) : Voici une carte générée pour ta révision.';
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,75 +47,54 @@ class LeitnerPage extends StatelessWidget {
         child: Column(
           children: [
             const Text(
-              'Système de flashcards pour réviser intelligemment.',
+              'Pose une question ou demande une carte de révision à l’IA.',
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Simulation de session de révision
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Session de révision démarrée !'),
-                    backgroundColor: Colors.orange,
-                  ),
-                );
-              },
-              child: const Text('Commencer une session'),
-            ),
-            const SizedBox(height: 24),
-            // Affichage d'une carte simulée
-            Card(
-              elevation: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    const Text(
-                      'Question :',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Quelle est la capitale du Togo ?',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red.shade100,
-                          ),
-                          child: const Text('Difficile'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orange.shade100,
-                          ),
-                          child: const Text('Moyen'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green.shade100,
-                          ),
-                          child: const Text('Facile'),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text('Voir la réponse'),
-                    ),
-                  ],
-                ),
+            TextField(
+              controller: _questionController,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                labelText: 'Question ou prompt',
+                border: OutlineInputBorder(),
+                hintText: 'Ex: Génère une carte sur les capitales africaines',
               ),
             ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _askLeitner,
+                child: _isLoading
+                    ? const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                          SizedBox(width: 8),
+                          Text('Génération en cours...'),
+                        ],
+                      )
+                    : const Text('Envoyer à l’IA'),
+              ),
+            ),
+            const SizedBox(height: 24),
+            if (_leitnerResult != null)
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.shade200),
+                ),
+                child: Text(
+                  _leitnerResult!,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
           ],
         ),
       ),

@@ -1,7 +1,38 @@
 import 'package:flutter/material.dart';
 
-class PlannerPage extends StatelessWidget {
+class PlannerPage extends StatefulWidget {
   const PlannerPage({super.key});
+
+  @override
+  State<PlannerPage> createState() => _PlannerPageState();
+}
+
+class _PlannerPageState extends State<PlannerPage> {
+  final TextEditingController _questionController = TextEditingController();
+  String? _plannerResult;
+  bool _isLoading = false;
+
+  Future<void> _askPlanner() async {
+    if (_questionController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Veuillez entrer une question ou un prompt'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+      _plannerResult = null;
+    });
+    // TODO: Appeler l'IA pour générer le planning
+    await Future.delayed(const Duration(seconds: 2)); // Simulation
+    setState(() {
+      _plannerResult = 'Planning généré par l’IA (exemple).';
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,49 +47,54 @@ class PlannerPage extends StatelessWidget {
         child: Column(
           children: [
             const Text(
-              'Entre tes matières et examens pour un planning personnalisé.',
+              'Pose une question ou demande un planning à l’IA.',
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Simulation de création de planning
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Planning généré !'),
-                    backgroundColor: Colors.indigo,
-                  ),
-                );
-              },
-              child: const Text('Créer un planning'),
+            TextField(
+              controller: _questionController,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                labelText: 'Question ou prompt',
+                border: OutlineInputBorder(),
+                hintText: 'Ex: Fais-moi un planning pour réviser les maths',
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _askPlanner,
+                child: _isLoading
+                    ? const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                          SizedBox(width: 8),
+                          Text('Génération en cours...'),
+                        ],
+                      )
+                    : const Text('Envoyer à l’IA'),
+              ),
             ),
             const SizedBox(height: 24),
-            // Affichage du planning simulé
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.indigo.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.indigo.shade200),
+            if (_plannerResult != null)
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.indigo.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.indigo.shade200),
+                ),
+                child: Text(
+                  _plannerResult!,
+                  style: const TextStyle(fontSize: 16),
+                ),
               ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Planning de la semaine :',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  SizedBox(height: 12),
-                  Text('Lundi : Mathématiques (Fractions) - 1h'),
-                  Text('Mardi : Français (Grammaire) - 45min'),
-                  Text('Mercredi : Histoire (Colonisation) - 1h'),
-                  Text('Jeudi : Sciences (Électricité) - 1h'),
-                  Text('Vendredi : Révision générale - 1h30'),
-                  Text('Samedi : Exercices pratiques - 2h'),
-                  Text('Dimanche : Repos et préparation - 30min'),
-                ],
-              ),
-            ),
           ],
         ),
       ),

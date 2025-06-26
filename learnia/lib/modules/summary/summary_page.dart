@@ -1,7 +1,38 @@
 import 'package:flutter/material.dart';
 
-class SummaryPage extends StatelessWidget {
+class SummaryPage extends StatefulWidget {
   const SummaryPage({super.key});
+
+  @override
+  State<SummaryPage> createState() => _SummaryPageState();
+}
+
+class _SummaryPageState extends State<SummaryPage> {
+  final TextEditingController _questionController = TextEditingController();
+  String? _summaryResult;
+  bool _isLoading = false;
+
+  Future<void> _askSummary() async {
+    if (_questionController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Veuillez entrer un texte ou une question'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+      _summaryResult = null;
+    });
+    // TODO: Appeler l'IA pour générer le résumé
+    await Future.delayed(const Duration(seconds: 2)); // Simulation
+    setState(() {
+      _summaryResult = 'Résumé généré par l’IA (exemple).';
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,59 +47,54 @@ class SummaryPage extends StatelessWidget {
         child: Column(
           children: [
             const Text(
-              'Colle un texte pour obtenir un résumé des points clés.',
+              'Colle un texte ou pose une question pour obtenir un résumé par l’IA.',
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
             TextField(
+              controller: _questionController,
               maxLines: 5,
               decoration: const InputDecoration(
-                labelText: 'Texte à résumer',
+                labelText: 'Texte ou question',
                 border: OutlineInputBorder(),
-                hintText: 'Colle ici le texte de ton cours...',
+                hintText: 'Colle ici le texte ou pose ta question...',
               ),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Simulation de génération de résumé
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Résumé généré !'),
-                    backgroundColor: Colors.purple,
-                  ),
-                );
-              },
-              child: const Text('Générer le résumé'),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _askSummary,
+                child: _isLoading
+                    ? const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                          SizedBox(width: 8),
+                          Text('Génération en cours...'),
+                        ],
+                      )
+                    : const Text('Envoyer à l’IA'),
+              ),
             ),
             const SizedBox(height: 24),
-            // Affichage du résumé simulé
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.purple.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.purple.shade200),
+            if (_summaryResult != null)
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.purple.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.purple.shade200),
+                ),
+                child: Text(
+                  _summaryResult!,
+                  style: const TextStyle(fontSize: 16),
+                ),
               ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Résumé généré :',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    '• Les fractions représentent des parties d\'un tout\n'
-                    '• Le numérateur indique le nombre de parties prises\n'
-                    '• Le dénominateur indique le nombre total de parties\n'
-                    '• Les fractions équivalentes ont la même valeur\n'
-                    '• Pour additionner des fractions, il faut un dénominateur commun',
-                    style: TextStyle(fontSize: 14),
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),

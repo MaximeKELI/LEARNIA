@@ -199,30 +199,7 @@ class _TutorPageState extends State<TutorPage> {
             const SizedBox(height: 16),
             
             // Suggestions de questions
-            if (_lastResponse == null) ...[
-              const Text(
-                'Suggestions de questions :',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              ...(_tutorModel.getSuggestedQuestions(_selectedSubject).take(3).map((suggestion) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2),
-                  child: InkWell(
-                    onTap: () {
-                      _questionController.text = suggestion;
-                    },
-                    child: Text(
-                      '• $suggestion',
-                      style: TextStyle(
-                        color: Colors.blue.shade600,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                );
-              })),
-            ],
+            // (SUPPRIMÉ : plus de suggestions prédéfinies)
             
             const SizedBox(height: 24),
             

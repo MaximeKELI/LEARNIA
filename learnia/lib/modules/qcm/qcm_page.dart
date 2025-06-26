@@ -1,7 +1,38 @@
 import 'package:flutter/material.dart';
 
-class QcmPage extends StatelessWidget {
+class QcmPage extends StatefulWidget {
   const QcmPage({super.key});
+
+  @override
+  State<QcmPage> createState() => _QcmPageState();
+}
+
+class _QcmPageState extends State<QcmPage> {
+  final TextEditingController _questionController = TextEditingController();
+  String? _qcmResult;
+  bool _isLoading = false;
+
+  Future<void> _generateQcm() async {
+    if (_questionController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Veuillez entrer un texte de cours ou une question'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+      _qcmResult = null;
+    });
+    // TODO: Appeler l'API IA pour générer le QCM à partir du texte
+    await Future.delayed(const Duration(seconds: 2)); // Simulation
+    setState(() {
+      _qcmResult = 'QCM généré par l\'IA (exemple) :\n1. Exemple de question ?\nA) Réponse 1\nB) Réponse 2\nC) Réponse 3';
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,62 +47,54 @@ class QcmPage extends StatelessWidget {
         child: Column(
           children: [
             const Text(
-              'Colle un texte de cours pour générer un QCM automatiquement.',
+              'Colle un texte de cours ou pose une question pour générer un QCM automatiquement.',
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
             TextField(
+              controller: _questionController,
               maxLines: 5,
               decoration: const InputDecoration(
-                labelText: 'Texte du cours',
+                labelText: 'Texte du cours ou question',
                 border: OutlineInputBorder(),
-                hintText: 'Colle ici le contenu de ton cours...',
+                hintText: 'Colle ici le contenu de ton cours ou pose ta question...',
               ),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Simulation de génération de QCM
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('QCM généré avec succès !'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              },
-              child: const Text('Générer le QCM'),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _generateQcm,
+                child: _isLoading
+                    ? const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                          SizedBox(width: 8),
+                          Text('Génération en cours...'),
+                        ],
+                      )
+                    : const Text('Générer le QCM'),
+              ),
             ),
             const SizedBox(height: 24),
-            // Affichage des questions simulées
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.green.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.green.shade200),
+            if (_qcmResult != null)
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.green.shade200),
+                ),
+                child: Text(
+                  _qcmResult!,
+                  style: const TextStyle(fontSize: 16),
+                ),
               ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Questions générées :',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  SizedBox(height: 12),
-                  Text('1. Qu\'est-ce qu\'une fraction ?'),
-                  Text('   A) Un nombre entier'),
-                  Text('   B) Une partie d\'un tout ✓'),
-                  Text('   C) Un nombre négatif'),
-                  Text('   D) Un nombre décimal'),
-                  SizedBox(height: 8),
-                  Text('2. Comment s\'écrit la moitié ?'),
-                  Text('   A) 1/3'),
-                  Text('   B) 1/2 ✓'),
-                  Text('   C) 2/1'),
-                  Text('   D) 1/4'),
-                ],
-              ),
-            ),
           ],
         ),
       ),

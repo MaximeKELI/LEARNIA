@@ -1,7 +1,38 @@
 import 'package:flutter/material.dart';
 
-class PerformancePage extends StatelessWidget {
+class PerformancePage extends StatefulWidget {
   const PerformancePage({super.key});
+
+  @override
+  State<PerformancePage> createState() => _PerformancePageState();
+}
+
+class _PerformancePageState extends State<PerformancePage> {
+  final TextEditingController _questionController = TextEditingController();
+  String? _performanceResult;
+  bool _isLoading = false;
+
+  Future<void> _askPerformance() async {
+    if (_questionController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Veuillez entrer une question ou un prompt'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+      _performanceResult = null;
+    });
+    // TODO: Appeler l'IA pour analyser la performance
+    await Future.delayed(const Duration(seconds: 2)); // Simulation
+    setState(() {
+      _performanceResult = 'Analyse IA (exemple).';
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,57 +47,54 @@ class PerformancePage extends StatelessWidget {
         child: Column(
           children: [
             const Text(
-              'Historique des résultats et progression.',
+              'Pose une question ou demande une analyse à l’IA.',
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
-            // Diagramme simulé
-            Container(
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.blue.shade200),
+            TextField(
+              controller: _questionController,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                labelText: 'Question ou prompt',
+                border: OutlineInputBorder(),
+                hintText: 'Ex: Analyse ma progression en maths',
               ),
-              child: const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.bar_chart, size: 48, color: Colors.blue),
-                    SizedBox(height: 8),
-                    Text(
-                      'Diagramme de progression',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    Text('(simulé)'),
-                  ],
-                ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _askPerformance,
+                child: _isLoading
+                    ? const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                          SizedBox(width: 8),
+                          Text('Analyse en cours...'),
+                        ],
+                      )
+                    : const Text('Envoyer à l’IA'),
               ),
             ),
             const SizedBox(height: 24),
-            // Suggestions simulées
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.orange.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange.shade200),
+            if (_performanceResult != null)
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.orange.shade200),
+                ),
+                child: Text(
+                  _performanceResult!,
+                  style: const TextStyle(fontSize: 16),
+                ),
               ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Suggestions d\'amélioration :',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  SizedBox(height: 8),
-                  Text('• Réviser davantage les fractions'),
-                  Text('• Pratiquer plus d\'exercices de géométrie'),
-                  Text('• Améliorer la vitesse de calcul mental'),
-                  Text('• Consulter le tuteur pour les points difficiles'),
-                ],
-              ),
-            ),
           ],
         ),
       ),
