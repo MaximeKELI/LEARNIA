@@ -9,7 +9,7 @@ class LeitnerPage extends StatefulWidget {
 
 class _LeitnerPageState extends State<LeitnerPage> {
   final TextEditingController _questionController = TextEditingController();
-  String? _leitnerResult;
+  List<Map<String, String>> _cards = [];
   bool _isLoading = false;
 
   Future<void> _askLeitner() async {
@@ -24,12 +24,15 @@ class _LeitnerPageState extends State<LeitnerPage> {
     }
     setState(() {
       _isLoading = true;
-      _leitnerResult = null;
+      _cards = [];
     });
-    // TODO: Appeler l'IA pour générer une réponse Leitner
+    // TODO: Appeler l'IA pour générer des cartes de révision
     await Future.delayed(const Duration(seconds: 2)); // Simulation
     setState(() {
-      _leitnerResult = 'Réponse IA (exemple) : Voici une carte générée pour ta révision.';
+      _cards = [
+        {'question': 'Quelle est la capitale du Togo ?', 'answer': 'Lomé'},
+        {'question': 'Quelle est la formule de l\'eau ?', 'answer': 'H2O'},
+      ];
       _isLoading = false;
     });
   }
@@ -82,19 +85,38 @@ class _LeitnerPageState extends State<LeitnerPage> {
               ),
             ),
             const SizedBox(height: 24),
-            if (_leitnerResult != null)
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.blue.shade200),
+            if (_cards.isNotEmpty)
+              ..._cards.map((card) => Card(
+                elevation: 4,
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Question :',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        card['question'] ?? '',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Réponse :',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        card['answer'] ?? '',
+                        style: const TextStyle(fontSize: 16, color: Colors.blue),
+                      ),
+                    ],
+                  ),
                 ),
-                child: Text(
-                  _leitnerResult!,
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ),
+              )),
           ],
         ),
       ),
