@@ -40,6 +40,9 @@ class LearniaApp extends StatelessWidget {
       supportedLocales: const [
         Locale('fr', ''),
         Locale('en', ''),
+        Locale('esp', ''),
+        Locale('ita', ''),
+        Locale('por', ''),
       ],
     );
   }
@@ -55,13 +58,21 @@ class HomePage extends StatelessWidget {
       _Module('Générateur de QCM', Icons.quiz, const QcmPage()),
       _Module('Mémorisation (Leitner)', Icons.memory, const LeitnerPage()),
       _Module('Résumé automatique', Icons.summarize, const SummaryPage()),
-      _Module('Traduction en langues locales', Icons.translate, const TranslationPage()),
-      _Module('Analyse des performances', Icons.bar_chart, const PerformancePage()),
+      _Module(
+        'Traduction en langues locales',
+        Icons.translate,
+        const TranslationPage(),
+      ),
+      _Module(
+        'Analyse des performances',
+        Icons.bar_chart,
+        const PerformancePage(),
+      ),
       _Module('Planificateur de révision', Icons.schedule, const PlannerPage()),
       _Module('Reconnaissance de devoirs', Icons.camera_alt, const OcrPage()),
       _Module('Orientation scolaire', Icons.school, const OrientationPage()),
     ];
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Learnia'),
@@ -85,10 +96,7 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 8),
               const Text(
                 'Votre assistant d\'apprentissage intelligent',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey,
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
@@ -111,20 +119,17 @@ class HomePage extends StatelessWidget {
                     ),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => module.page),
-                      ),
+                      onTap:
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => module.page),
+                          ),
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              module.icon,
-                              size: 48,
-                              color: Colors.blue,
-                            ),
+                            Icon(module.icon, size: 48, color: Colors.blue),
                             const SizedBox(height: 12),
                             Text(
                               module.title,
