@@ -7,8 +7,11 @@ from fastapi.responses import JSONResponse
 from loguru import logger
 
 from .api import auth, tutor
-from .config import settings
+from .config.environment import get_settings
 from .database import init_db
+
+# Obtenir la configuration selon l'environnement
+settings = get_settings()
 
 # Configuration des logs
 logger.add(

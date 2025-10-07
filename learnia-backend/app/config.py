@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 
 from dotenv import load_dotenv
@@ -16,13 +17,13 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./learnia.db"
 
     # Configuration de sécurité
-    secret_key: str = "your-secret-key-change-in-production"
+    secret_key: str = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
 
     # Configuration des APIs externes
-    openai_api_key: Optional[str] = None
-    huggingface_api_key: Optional[str] = None
+    openai_api_key: Optional[str] = os.getenv("OPENAI_API_KEY")
+    huggingface_api_key: Optional[str] = os.getenv("HUGGINGFACE_API_KEY")
 
     # Configuration CORS
     cors_origins: list = [
