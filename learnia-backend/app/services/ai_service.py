@@ -24,6 +24,8 @@ from ..models.ai_models import (
     TutorRequest,
     TutorResponse,
 )
+from ..optimizations.api import performance_monitor, cache_response
+from ..optimizations.image import optimize_image_for_ocr
 
 
 class AIService:
@@ -58,6 +60,8 @@ class AIService:
             },
         }
 
+    @performance_monitor
+    @cache_response(cache_duration=300, cache_key_prefix="tutor_response")
     async def generate_tutor_response(
         self, request: TutorRequest
     ) -> TutorResponse:

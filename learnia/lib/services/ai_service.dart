@@ -13,20 +13,31 @@ class AiService {
   static const String _huggingfaceEndpoint = '/ai/huggingface';
 
   /// Génère une réponse pour le tuteur intelligent
-  Future<String> generateTutorResponse(String question, String subject) async {
+  Future<String> generateTutorResponse(String question, String subject, {String? token}) async {
     try {
-      final response = await _apiService.post(
-        '$_openaiEndpoint/chat',
-        body: {
-          'question': question,
-          'subject': subject,
-          'context': 'education_tutor',
-          'language': 'fr',
-          'grade_level': 'primary_to_high_school',
-        },
-      );
+      final response = token != null 
+        ? await _apiService.jwtRequest(
+            endpoint: '/api/v1/ai/tutor/',
+            token: token,
+            method: 'POST',
+            body: {
+              'question': question,
+              'subject': subject,
+              'grade_level': 'Collège',
+            },
+          )
+        : await _apiService.post(
+            '$_openaiEndpoint/chat',
+            body: {
+              'question': question,
+              'subject': subject,
+              'context': 'education_tutor',
+              'language': 'fr',
+              'grade_level': 'primary_to_high_school',
+            },
+          );
       
-      return response['response'] ?? 'Désolé, je ne peux pas répondre pour le moment.';
+      return response['answer'] ?? response['response'] ?? 'Désolé, je ne peux pas répondre pour le moment.';
     } catch (e) {
       // Fallback vers l'IA locale ou réponse simulée
       return _generateLocalResponse(question, subject);

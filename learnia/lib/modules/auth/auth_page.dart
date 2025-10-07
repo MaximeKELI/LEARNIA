@@ -17,11 +17,10 @@ class _AuthPageState extends State<AuthPage> {
   String _password = '';
   String _confirmPassword = '';
   String _username = '';
-  String _firstName = '';
-  String _lastName = '';
+  String _fullName = '';
+  String _gradeLevel = 'Collège';
+  String _school = '';
   String _phone = '';
-  DateTime? _birthDate;
-  int? _age;
   String? _error;
 
   void _toggleMode() {
@@ -38,21 +37,23 @@ class _AuthPageState extends State<AuthPage> {
       setState(() { _error = 'Les mots de passe ne correspondent pas.'; });
       return;
     }
-    if (!_isLogin && _birthDate == null) {
-      setState(() { _error = 'Veuillez sélectionner votre date de naissance.'; });
+    if (!_isLogin && _fullName.isEmpty) {
+      setState(() { _error = 'Veuillez entrer votre nom complet.'; });
       return;
     }
     setState(() { _isLoading = true; _error = null; });
     try {
       if (_isLogin) {
-        await AuthService().login(_email, _password);
+        final result = await AuthService().login(_email, _password);
+        // Le token est maintenant géré dans le service
       } else {
         await AuthService().register(
           email: _email,
           username: _username,
-          firstName: _firstName,
-          lastName: _lastName,
+          fullName: _fullName,
           password: _password,
+          gradeLevel: _gradeLevel,
+          school: _school.isNotEmpty ? _school : null,
           phone: _phone.isNotEmpty ? _phone : null,
         );
       }
@@ -99,15 +100,9 @@ class _AuthPageState extends State<AuthPage> {
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
-                    decoration: const InputDecoration(labelText: 'Prénom'),
+                    decoration: const InputDecoration(labelText: 'Nom complet'),
                     validator: (v) => v != null && v.isNotEmpty ? null : 'Obligatoire',
-                    onSaved: (v) => _firstName = v!.trim(),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    decoration: const InputDecoration(labelText: 'Nom'),
-                    validator: (v) => v != null && v.isNotEmpty ? null : 'Obligatoire',
-                    onSaved: (v) => _lastName = v!.trim(),
+                    onSaved: (v) => _fullName = v!.trim(),
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
@@ -116,46 +111,21 @@ class _AuthPageState extends State<AuthPage> {
                     onSaved: (v) => _phone = v!.trim(),
                   ),
                   const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: InkWell(
-                          onTap: () async {
-                            final now = DateTime.now();
-                            final picked = await showDatePicker(
-                              context: context,
-                              initialDate: DateTime(now.year - 16),
-                              firstDate: DateTime(now.year - 100),
-                              lastDate: now,
-                            );
-                            if (picked != null) {
-                              setState(() {
-                                _birthDate = picked;
-                                final today = DateTime.now();
-                                _age = today.year - picked.year - ((today.month < picked.month || (today.month == picked.month && today.day < picked.day)) ? 1 : 0);
-                              });
-                            }
-                          },
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              labelText: 'Date de naissance',
-                              border: OutlineInputBorder(),
-                            ),
-                            child: Row(
-                              children: [
-                                Text(_birthDate == null
-                                    ? 'Sélectionner...'
-                                    : '${_birthDate!.day.toString().padLeft(2, '0')}/${_birthDate!.month.toString().padLeft(2, '0')}/${_birthDate!.year}'),
-                                if (_age != null) ...[
-                                  const SizedBox(width: 12),
-                                  Text('Vous avez $_age ans', style: const TextStyle(color: Colors.green)),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                  DropdownButtonFormField<String>(
+                    value: _gradeLevel,
+                    decoration: const InputDecoration(labelText: 'Niveau scolaire'),
+                    items: const [
+                      DropdownMenuItem(value: 'Primaire', child: Text('Primaire')),
+                      DropdownMenuItem(value: 'Collège', child: Text('Collège')),
+                      DropdownMenuItem(value: 'Lycée', child: Text('Lycée')),
+                      DropdownMenuItem(value: 'Terminale', child: Text('Terminale')),
                     ],
+                    onChanged: (value) => setState(() => _gradeLevel = value!),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    decoration: const InputDecoration(labelText: 'École (optionnel)'),
+                    onSaved: (v) => _school = v!.trim(),
                   ),
                   const SizedBox(height: 12),
                 ],

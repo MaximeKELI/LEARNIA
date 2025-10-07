@@ -133,7 +133,7 @@ class ApiService {
   // Méthode pour les requêtes avec authentification
   Future<Map<String, dynamic>> authenticatedRequest({
     required String endpoint,
-    required String apiKey,
+    required String token,
     String method = 'GET',
     Map<String, dynamic>? body,
   }) async {
@@ -142,7 +142,25 @@ class ApiService {
       method: method,
       body: body,
       headers: {
-        'Authorization': 'Bearer $apiKey',
+        'Authorization': 'Bearer $token',
+      },
+    );
+  }
+
+  // Méthode pour les requêtes avec token JWT
+  Future<Map<String, dynamic>> jwtRequest({
+    required String endpoint,
+    required String token,
+    String method = 'GET',
+    Map<String, dynamic>? body,
+  }) async {
+    return _makeRequest(
+      endpoint: endpoint,
+      method: method,
+      body: body,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
       },
     );
   }

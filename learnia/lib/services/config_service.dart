@@ -6,7 +6,7 @@ class ConfigService {
   // Configuration des environnements
   static const String _devApiUrl = 'https://dev-api.learnia.tg';
   static const String _prodApiUrl = 'https://api.learnia.tg';
-  static const String _localApiUrl = 'http://localhost:3000';
+  static const String _localApiUrl = 'http://localhost:8000';
 
   // Configuration des APIs d'IA
   static const String _openaiApiKey = 'YOUR_OPENAI_API_KEY';

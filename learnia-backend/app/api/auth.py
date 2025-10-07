@@ -6,7 +6,7 @@ from loguru import logger
 from sqlmodel import Session
 
 from ..database import get_session
-from ..models.user import Token, User, UserCreate, UserResponse
+from ..models.user import Token, User, UserCreate, UserResponse, UserLogin
 from ..services.auth import (
     authenticate_user,
     create_access_token,
@@ -66,7 +66,7 @@ async def register(
 
 @router.post("/login", response_model=Token)
 async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    user_login: UserLogin,
     db: Session = Depends(get_session),
 ):
     """
@@ -76,7 +76,7 @@ async def login(
     - **password**: Mot de passe
     """
     try:
-        user = authenticate_user(db, form_data.username, form_data.password)
+        user = authenticate_user(db, user_login.email, user_login.password)
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,

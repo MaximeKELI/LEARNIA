@@ -2,21 +2,31 @@ class UserModel {
   final int id;
   final String email;
   final String username;
-  final String firstName;
-  final String lastName;
+  final String? fullName;
+  final String? gradeLevel;
+  final String? school;
   final String? phone;
-  final String? avatarUrl;
-  final String? token;
+  final bool isActive;
+  final bool isTeacher;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final DateTime? lastLogin;
+  final String? birthDate;
 
   UserModel({
     required this.id,
     required this.email,
     required this.username,
-    required this.firstName,
-    required this.lastName,
+    this.fullName,
+    this.gradeLevel,
+    this.school,
     this.phone,
-    this.avatarUrl,
-    this.token,
+    this.isActive = true,
+    this.isTeacher = false,
+    this.createdAt,
+    this.updatedAt,
+    this.lastLogin,
+    this.birthDate,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -24,11 +34,16 @@ class UserModel {
       id: json['id'] ?? 0,
       email: json['email'] ?? '',
       username: json['username'] ?? '',
-      firstName: json['first_name'] ?? '',
-      lastName: json['last_name'] ?? '',
+      fullName: json['full_name'],
+      gradeLevel: json['grade_level'],
+      school: json['school'],
       phone: json['phone'],
-      avatarUrl: json['avatar_url'],
-      token: json['token'],
+      isActive: json['is_active'] ?? true,
+      isTeacher: json['is_teacher'] ?? false,
+      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
+      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
+      lastLogin: json['last_login'] != null ? DateTime.parse(json['last_login']) : null,
+      birthDate: json['birth_date'],
     );
   }
 
@@ -37,11 +52,16 @@ class UserModel {
       'id': id,
       'email': email,
       'username': username,
-      'first_name': firstName,
-      'last_name': lastName,
+      'full_name': fullName,
+      'grade_level': gradeLevel,
+      'school': school,
       'phone': phone,
-      'avatar_url': avatarUrl,
-      'token': token,
+      'is_active': isActive,
+      'is_teacher': isTeacher,
+      'created_at': createdAt?.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
+      'last_login': lastLogin?.toIso8601String(),
+      'birth_date': birthDate,
     };
   }
 } 
